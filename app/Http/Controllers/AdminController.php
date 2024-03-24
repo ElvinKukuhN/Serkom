@@ -8,36 +8,53 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    // Method untuk menampilkan semua data mahasiswa
     public function index()
     {
+        // Mengambil semua data mahasiswa dari database dan diurutkan berdasarkan NIM secara descending
         $mahasiswas = Mahasiswa::orderBy('nim', 'desc')->get();
 
+        // Mengirim data mahasiswa ke view 'admin.index'
         return view('admin.index', compact('mahasiswas'));
     }
 
+    // Method untuk menampilkan detail mahasiswa berdasarkan NIM
     public function showByNim($nim)
     {
+        // Mencari mahasiswa dengan NIM yang sesuai atau menghasilkan error jika tidak ditemukan
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Mengirim data mahasiswa ke view 'admin.show'
         return view('admin.show', compact('mahasiswa'));
     }
 
+    // Method untuk menghapus mahasiswa berdasarkan NIM
     public function delete($nim)
     {
+        // Mencari mahasiswa dengan NIM yang sesuai atau menghasilkan error jika tidak ditemukan
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Menghapus mahasiswa dari database
         $mahasiswa->delete();
 
+        // Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.index')->with('success', 'Mahasiswa berhasil dihapus.');
     }
 
+    // Method untuk menampilkan form edit mahasiswa
     public function edit($nim)
     {
+        // Mencari mahasiswa dengan NIM yang sesuai atau menghasilkan error jika tidak ditemukan
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
+
+        // Mengirim data mahasiswa ke view 'admin.edit'
         return view('admin.edit', compact('mahasiswa'));
     }
 
+    // Method untuk memperbarui data mahasiswa
     public function update(Request $request, $nim)
     {
-        // Validate the request data
+        // Validasi data yang diterima dari request
         $request->validate([
             'nama' => 'required|string|max:255',
             'nim' => 'required|string|max:255',
@@ -47,25 +64,26 @@ class AdminController extends Controller
             'tanggal_lahir' => 'required|date',
         ]);
 
-        // Find the mahasiswa to be updated
+        // Mencari mahasiswa dengan NIM yang sesuai atau menghasilkan error jika tidak ditemukan
         $mahasiswa = Mahasiswa::where('nim', $nim)->firstOrFail();
 
-        // Update the mahasiswa
+        // Memperbarui data mahasiswa dengan data yang diterima dari request
         $mahasiswa->update([
             'nama' => $request->input('nama'),
             'alamat' => $request->input('alamat'),
             'usia' => $request->input('usia'),
-            'gender' => $request->input('gender'), // Ini seharusnya sudah benar
+            'gender' => $request->input('gender'), // Sudah benar
             'tanggal_lahir' => $request->input('tanggal_lahir'),
         ]);
 
-        // Redirect back to the index page with a success message
+        // Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.index')->with('success', 'Mahasiswa berhasil diperbarui.');
     }
 
+    // Method untuk menyimpan data mahasiswa baru
     public function store(Request $request)
     {
-        // Validate the request data
+        // Validasi data yang diterima dari request
         $request->validate([
             'nama' => 'required|string|max:255',
             'nim' => 'required|string|max:255|unique:mahasiswas,nim',
@@ -75,7 +93,7 @@ class AdminController extends Controller
             'tanggal_lahir' => 'required|date',
         ]);
 
-        // Create the mahasiswa
+        // Membuat mahasiswa baru berdasarkan data yang diterima dari request
         Mahasiswa::create([
             'nama' => $request->input('nama'),
             'nim' => $request->input('nim'),
@@ -85,12 +103,15 @@ class AdminController extends Controller
             'tanggal_lahir' => $request->input('tanggal_lahir'),
         ]);
 
-        // Redirect back to the index page with a success message
+        // Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.index')->with('success', 'Mahasiswa berhasil ditambahkan.');
     }
-    
+
+    // Method untuk menampilkan form untuk membuat mahasiswa baru
     public function create()
     {
+        // Menampilkan view 'admin.create'
         return view('admin.create');
     }
 }
+
