@@ -1,4 +1,4 @@
-# Sertifikasi Komptensi
+# Sertifikasi Kompetensi
 
 ### Instalasi
 
